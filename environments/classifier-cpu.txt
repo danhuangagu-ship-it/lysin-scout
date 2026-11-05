@@ -1,0 +1,2 @@
+# Python 3.11 or 3.12; install the CPU torch wheel first (README).
+-r ../requirements-classifier.txt

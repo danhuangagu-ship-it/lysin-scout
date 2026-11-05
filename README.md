@@ -11,79 +11,60 @@ scalers, configuration files and fixed embedding examples. Weights and scalers
 are verified by SHA-256 before inference. These models are not retrained when
 screening a new protein collection.
 
-## Install
+## Install and run
 
-Use Python 3.10–3.12 in a separate environment:
+Use separate environments for classification and embedding generation. Do not run
+an unversioned `pip install esm` in the classifier environment: upstream releases
+may require a newer PyTorch and install large CUDA dependencies. The commands below
+use Linux x86_64 CPU wheels and Python 3.11; see [installation details](docs/INSTALL.md)
+for all encoders, fixed downloads, optional integration tests and GPU limitations.
 
 ```bash
 git clone https://github.com/danhuangagu-ship-it/lysin-scout.git
 cd lysin-scout
-python -m venv .venv
-source .venv/bin/activate
+python3.11 -m venv .venv-classifier
+source .venv-classifier/bin/activate
+python -m pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -r environments/classifier-cpu.txt
 python -m pip install -e .
-```
+python -m pip check
 
-The classifier examples were verified on CPU with Python 3.12, NumPy 1.26.4,
-PyTorch 2.6.0, scikit-learn 1.3.2 and joblib 1.4.2. The classifiers were originally
-trained with PyTorch 2.1.0 and scikit-learn 1.3.2.
-
-## Quick start with the included embeddings
-
-No pretrained encoder downloads are needed for this example:
-
-```bash
-lysin-scout --model ESMC \
-  --features examples/ESMC/features.npy \
-  --ids examples/ESMC/ids.csv \
-  --out results/esmc_predictions.csv
-
+# No encoder download is needed for the archived-embedding example.
+lysin-scout --model ESMC --features examples/ESMC/features.npy \
+  --ids examples/ESMC/ids.csv --out results/esmc_example.csv
 python -m unittest discover -s tests -v
+deactivate
 ```
 
-Replace `ESMC` with `ProtBERT` or `ProSE` to use the other examples. Tests compare
-all three models against archived predictions, requiring identical predicted
-classes and maximum absolute probability differences no greater than 1e-5.
+Replace `ESMC` with `ProtBERT` or `ProSE` in the example paths and model argument.
+Each example has 16 row-matched embeddings and archived predictions.
 
-## Predict from protein sequences
+### Validation status
 
-Generate embeddings first, then run the corresponding classifier. Each encoder
-should run in an environment compatible with its upstream implementation.
-Pretrained encoder weights are not included in this repository.
+| Path | Environment and evidence | Status |
+|---|---|---|
+| Three classifiers on archived embeddings | Maintainer: macOS ARM64, Python 3.12, PyTorch 2.6.0, NumPy 1.26.4, scikit-learn 1.3.2, joblib 1.4.2 | Tested; predicted classes agree, maximum probability difference about 1.2e-7 |
+| Three classifiers on archived embeddings | User-reported Linux HPC test of `ec0231d`; exact Python/hardware not supplied | Reported passed; not independently reproduced |
+| ESMC FASTA → embeddings → classifier, CPU | User-reported Linux HPC, esm 3.2.1, transformers 4.48.1, PyTorch 2.6.0; selective dependency installation plus httpx | Reported passed; not a dependency-complete validated environment |
+| Full-dependency ESMC CPU recipe in `environments/` | Proposed Python 3.11 / PyTorch 2.3.0 stack matching torchtext 0.18 and torchvision 0.18 | Linux dependency resolution passed; runtime and `pip check` not yet verified |
+| ProSE FASTA → embeddings → classifier, CPU | Maintainer: macOS ARM64, Python 3.12.14, PyTorch 2.6.0, NumPy 1.26.4, fixed upstream source/weights | Synthetic 3-record end-to-end smoke test passed; Linux recipe not runtime-verified |
+| ProtBERT FASTA path | Proposed pinned core dependencies; optional test supplied | End-to-end execution not yet verified |
+| GPU FASTA paths | No release benchmark supplied | Not yet verified |
 
-```bash
-# Example: ESMC encoder environment, with upstream esm installed
-python -m lysin_scout.embed --model ESMC --fasta proteins.faa \
-  --encoder-path pretrained/esmc_300m_2024_12_v0.pth \
-  --out-dir embeddings/ESMC --device cuda
+Passing the classifier examples does not validate encoder imports, weights or FASTA
+handling. Run the optional real-encoder test after installation. The ESMC Linux
+file pins its full resolver-selected dependency set; the other recipes pin core
+packages. Dependency resolution is not runtime validation. Keep the output of
+`pip check` and `pip freeze` with your test report. Peak memory and end-to-end timings have not yet been reported;
+[resource instructions](docs/INSTALL.md#resource-measurement) show how to collect them.
 
-# Classifier environment
-lysin-scout --model ESMC --features embeddings/ESMC/features.npy \
-  --ids embeddings/ESMC/ids.csv --out results/esmc_predictions.csv
-```
+## Encoders and sequence handling
 
-For ProtBERT, install the upstream `transformers` package in the encoder environment
-and pass a local `Rostlab/prot_bert` directory to `--encoder-path`. This is
-ProtBERT, not ProtBERT-BFD. For ProSE, obtain the upstream ProSE checkout and its
-`prose_mt_3x1024.sav` weights, then use:
-
-```bash
-python -m lysin_scout.embed --model ProSE --fasta proteins.faa \
-  --prose-source /path/to/prose \
-  --encoder-path /path/to/prose/saved_models/prose_mt_3x1024.sav \
-  --out-dir embeddings/ProSE --device cpu
-```
-
-Obtain encoders from their upstream sources and follow their licenses and access
-conditions: [ESM](https://github.com/evolutionaryscale/esm),
-[ESMC checkpoint used in this study](https://huggingface.co/biohub/esmc-300m-2024-12),
-[ProtBERT](https://huggingface.co/Rostlab/prot_bert), and
-[ProSE](https://github.com/tbepler/prose).
-
-The embedding command validates encoder parameter fingerprints against those
-used for the classifiers. A mismatch fails rather than silently substituting
-different weights. Sequences are not truncated; overly long inputs or insufficient
-memory cause an error. Protein IDs must be unique; distinct IDs with identical
-sequences are retained, with shared embedding computation.
+Pretrained encoders are downloaded separately with fixed revisions and file SHA-256
+checksums; see `environments/encoder-files.json` and `scripts/download_encoders.py`.
+The embedding command additionally checks parameter fingerprints against those used
+to train the classifiers. Sequences are not truncated. IDs must be unique; identical
+sequences under distinct IDs remain separate records and share embedding computation.
 
 | Encoder | Features | Pooling and sequence handling |
 |---|---:|---|
@@ -91,9 +72,12 @@ sequences are retained, with shared embedding computation.
 | ProtBERT | 1,024 | Attention-mask mean including non-padding special tokens; terminal stop symbols removed |
 | ProSE-MT | 6,165 | Mean of transformed residue representations; original sequence passed through Uniprot21 |
 
-Only the classifier path and fixed embedding examples have been executed in the
-local release test. Full encoder inference requires the matching upstream
-dependencies and large weights; it is not covered by the small example tests.
+Encoder licenses and access conditions remain those of their upstream providers:
+[ESM](https://github.com/evolutionaryscale/esm),
+[original-format ESMC weights](https://huggingface.co/biohub/esmc-300m-2024-12),
+[ProtBERT](https://huggingface.co/Rostlab/prot_bert) and
+[ProSE](https://github.com/tbepler/prose). Do not substitute a newer-format ESMC
+checkpoint without verifying the parameter fingerprint and pooling conventions.
 
 ## Output and candidate selection
 

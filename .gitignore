@@ -10,3 +10,9 @@ embeddings/
 pretrained/
 *.token
 .env
+.venv-*/
+upstream/
+/*-environment.txt
+/*-packages.txt
+/*-resources.txt
+/*-cpu.txt

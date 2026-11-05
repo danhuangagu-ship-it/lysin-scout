@@ -1,0 +1,3 @@
+# Proposed environment; full FASTA inference not yet validated.
+-r ../requirements-classifier.txt
+transformers==4.48.1

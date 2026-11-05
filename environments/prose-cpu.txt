@@ -1,0 +1,3 @@
+# Proposed environment; full FASTA inference not yet validated.
+# The fixed upstream ProSE checkout is imported directly; no pip package needed.
+-r ../requirements-classifier.txt

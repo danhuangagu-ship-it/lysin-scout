@@ -5,6 +5,9 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+import time
+import platform
+import importlib.metadata
 import numpy as np
 from .predict import MODELS
 
@@ -92,7 +95,16 @@ def main():
     parser.add_argument('--prose-source', help='Upstream ProSE checkout; required for ProSE')
     parser.add_argument('--out-dir', required=True)
     parser.add_argument('--device', choices=['cpu', 'cuda'], default='cpu')
+    parser.add_argument('--threads', type=int, default=1, help='CPU intra-op threads')
     args = parser.parse_args()
+    if args.threads < 1:
+        parser.error('--threads must be positive')
+    torch.set_num_threads(args.threads)
+    started = time.perf_counter()
+    if args.device == 'cuda':
+        if not torch.cuda.is_available():
+            parser.error('CUDA is not available in this environment')
+        torch.cuda.reset_peak_memory_stats()
     out = Path(args.out_dir)
     if out.exists():
         parser.error('Output directory exists; choose a new path')
@@ -120,9 +132,22 @@ def main():
         writer = csv.DictWriter(f, fieldnames=list(mapping[0]))
         writer.writeheader()
         writer.writerows(mapping)
+    if args.device == 'cuda':
+        torch.cuda.synchronize()
+    versions = {}
+    for package in ('torch', 'numpy', 'esm', 'transformers', 'httpx'):
+        try:
+            versions[package] = importlib.metadata.version(package)
+        except importlib.metadata.PackageNotFoundError:
+            pass
     (out / 'manifest.json').write_text(json.dumps({'model': args.model, 'proteins': len(records),
         'dimension': DIMS[args.model], 'encoder_parameter_sha256': SIGNATURES[args.model],
-        'full_sequences': True, 'truncated': False, 'device': args.device}, indent=2))
+        'full_sequences': True, 'truncated': False, 'device': args.device,
+        'threads': args.threads, 'python': platform.python_version(),
+        'platform': platform.platform(), 'package_versions': versions,
+        'elapsed_seconds': time.perf_counter() - started,
+        'cuda_peak_allocated_bytes': torch.cuda.max_memory_allocated() if args.device == 'cuda' else None,
+        'cuda_peak_reserved_bytes': torch.cuda.max_memory_reserved() if args.device == 'cuda' else None}, indent=2))
 
 
 if __name__ == '__main__':

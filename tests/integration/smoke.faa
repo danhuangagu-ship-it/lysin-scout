@@ -1,0 +1,6 @@
+>example_a synthetic smoke-test sequence; no functional claim
+MKTAYIAKQRQISFVKSHFSRQDILDLWIYHTQGYFPQ
+>example_duplicate identical sequence with a distinct ID
+MKTAYIAKQRQISFVKSHFSRQDILDLWIYHTQGYFPQ
+>example_stop terminal stop retained except in ProtBERT
+MKTAYIAKQRQISFVKSHFSRQDILDLWIYHTQGYFPQ*

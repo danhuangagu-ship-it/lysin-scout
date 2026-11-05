@@ -39,3 +39,19 @@ All three distributed models are compared against archived embedding examples.
 The tests require class agreement and probability differences <=1e-5. They also
 check rejection of invalid embeddings and duplicate FASTA IDs. These checks do
 not measure generalization on a newly supplied collection.
+
+## Encoder validation scope
+
+A user reported a successful ESMC CPU FASTA pipeline on Linux HPC at commit
+`ec0231d93162abae0b6d68facd5bd5e69a8489d2`, using esm 3.2.1,
+transformers 4.48.1 and CPU PyTorch 2.6.0 after selectively installing dependencies
+and adding httpx. Python version, full package inventory and hardware were not
+provided. This report does not establish dependency completeness, ProtBERT/ProSE
+end-to-end correctness or GPU support. The separately supplied full-dependency
+ESMC recipe uses a different PyTorch version and needs its own runtime verification.
+See the README validation table before choosing an environment.
+
+A subsequent maintainer smoke test passed the ProSE FASTA-to-classifier path on
+macOS ARM64, Python 3.12.14, PyTorch 2.6.0 and NumPy 1.26.4 with fixed upstream
+source/weights and three synthetic records. This is a software integration check,
+not a performance or activity benchmark, and does not validate the Linux recipe.

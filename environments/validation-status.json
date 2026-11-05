@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-05",
+  "baseline_commit": "ec0231d93162abae0b6d68facd5bd5e69a8489d2",
+  "esmc_linux_recipe": {
+    "python": "3.11",
+    "platform": "Linux x86_64",
+    "dependency_resolution": "passed",
+    "pip_check": "not_run",
+    "end_to_end": "not_run",
+    "torch": "2.3.0+cpu",
+    "esm": "3.2.1",
+    "transformers": "4.48.1"
+  },
+  "user_report": {
+    "platform": "Linux HPC",
+    "python": "not_provided",
+    "hardware": "not_provided",
+    "classifiers": "passed",
+    "esmc_cpu_end_to_end": "passed",
+    "torch": "2.6.0 CPU",
+    "esm": "3.2.1",
+    "transformers": "4.48.1",
+    "installation": "selective dependencies plus httpx; not dependency-complete"
+  },
+  "maintainer_prose_smoke": {
+    "platform": "macOS ARM64",
+    "python": "3.12.14",
+    "torch": "2.6.0",
+    "numpy": "1.26.4",
+    "device": "cpu",
+    "synthetic_records": 3,
+    "result": "passed",
+    "source_revision": "3416cc8455438d154251cc57cd123e5e17807a7b"
+  },
+  "protbert_end_to_end": "not_run",
+  "gpu_end_to_end": "not_run"
+}

@@ -1,0 +1,66 @@
+{
+  "ESMC": {
+    "revision": "7f10b20ae75017b2dbc884070e03434515709a8d",
+    "files": [
+      {
+        "path": "ESMC/esmc_300m_2024_12_v0.pth",
+        "url": "https://huggingface.co/biohub/esmc-300m-2024-12/resolve/7f10b20ae75017b2dbc884070e03434515709a8d/data/weights/esmc_300m_2024_12_v0.pth",
+        "bytes": 1332095738,
+        "sha256": "323dff9fbf3fef297a74f4f18b6528e6f2e599b0bcf72b6927516804015becea"
+      }
+    ]
+  },
+  "ProtBERT": {
+    "revision": "7a894481acdc12202f0a415dd567f6cfdb698908",
+    "files": [
+      {
+        "path": "ProtBERT/pytorch_model.bin",
+        "url": "https://huggingface.co/Rostlab/prot_bert/resolve/7a894481acdc12202f0a415dd567f6cfdb698908/pytorch_model.bin",
+        "bytes": 1684058277,
+        "sha256": "6ea3edd26cfefc3111176100ee2a027ed510f9c86b63e5b53a2a050b59f2af9d"
+      },
+      {
+        "path": "ProtBERT/config.json",
+        "url": "https://huggingface.co/Rostlab/prot_bert/resolve/7a894481acdc12202f0a415dd567f6cfdb698908/config.json",
+        "bytes": 361,
+        "sha256": "44c1e1229d520841e5b29f1dd2292595219061daf0c5f5dacb4f68d1272d69a3"
+      },
+      {
+        "path": "ProtBERT/special_tokens_map.json",
+        "url": "https://huggingface.co/Rostlab/prot_bert/resolve/7a894481acdc12202f0a415dd567f6cfdb698908/special_tokens_map.json",
+        "bytes": 112,
+        "sha256": "303df45a03609e4ead04bc3dc1536d0ab19b5358db685b6f3da123d05ec200e3"
+      },
+      {
+        "path": "ProtBERT/tokenizer_config.json",
+        "url": "https://huggingface.co/Rostlab/prot_bert/resolve/7a894481acdc12202f0a415dd567f6cfdb698908/tokenizer_config.json",
+        "bytes": 86,
+        "sha256": "73f5e97ab29042bac49dc96f7b8a7a790994509bbd2fe3e9cd4f59affc46c2ce"
+      },
+      {
+        "path": "ProtBERT/vocab.txt",
+        "url": "https://huggingface.co/Rostlab/prot_bert/resolve/7a894481acdc12202f0a415dd567f6cfdb698908/vocab.txt",
+        "bytes": 81,
+        "sha256": "7ea18f4fe3a796c1146f9830d50334a251f368db96bdd0606e78846ca3a30607"
+      }
+    ]
+  },
+  "ProSE": {
+    "source_revision": "3416cc8455438d154251cc57cd123e5e17807a7b",
+    "files": [
+      {
+        "path": "ProSE/saved_models.zip",
+        "url": "https://bergerlab-downloads.csail.mit.edu/prose/saved_models.zip",
+        "bytes": 581846360,
+        "sha256": "ef2b5c99d9c5e0866cf5862c92a035b2cf2f2a2a2fa4590088cd8197f8c7369c"
+      }
+    ],
+    "extract": {
+      "archive": "ProSE/saved_models.zip",
+      "member": "saved_models/prose_mt_3x1024.sav",
+      "path": "ProSE/prose_mt_3x1024.sav",
+      "bytes": 390808822,
+      "sha256": "e969e9d992fa27c521ba6c48d3bdd81cc8265eacca374062d81144ac0229dc0f"
+    }
+  }
+}
