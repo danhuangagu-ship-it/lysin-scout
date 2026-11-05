@@ -1,0 +1,37 @@
+{
+  "representation": "ESMC",
+  "classifier": "MLP",
+  "seed": 42,
+  "input_dim": 960,
+  "hidden_sizes": [
+    256
+  ],
+  "dropout": 0.3,
+  "checkpoint": "model.pth",
+  "checkpoint_sha256": "5a7bbeaee265247a342974ef593566a6e437ebb39db4b26da17a3dbbba37ad47",
+  "scaler": "scaler.joblib",
+  "scaler_sha256": "fd60ee21270aab276a3f66e204d7219fb863c4d47ec6d77e98aa41fb8dd6f66a",
+  "best_epoch": 15,
+  "validation_macro_log_loss": 0.12544339764146795,
+  "class_order": [
+    "endolysin",
+    "VAL",
+    "holin",
+    "non-LVH"
+  ],
+  "discovery_host_groups": [
+    "S_aureus_virus",
+    "E_faecalis_virus",
+    "E_faecium_virus"
+  ],
+  "hyperparameters": {
+    "hidden_sizes": [
+      256
+    ],
+    "lr": 0.0001,
+    "batch_size": 256
+  },
+  "selection_metric": "validation_macro_log_loss",
+  "protocol_id": "benchmark_v2_20261015",
+  "decision_rule": "Four-class argmax equals class 0"
+}

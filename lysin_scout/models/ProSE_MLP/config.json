@@ -1,0 +1,37 @@
+{
+  "representation": "ProSE",
+  "classifier": "MLP",
+  "seed": 42,
+  "input_dim": 6165,
+  "hidden_sizes": [
+    256
+  ],
+  "dropout": 0.3,
+  "checkpoint": "model.pth",
+  "checkpoint_sha256": "9e43212df6010842004bca031fec0e8e48beea582b2b9054e482361fd353fb55",
+  "scaler": "scaler.joblib",
+  "scaler_sha256": "01a950ece9606e43f162b6df29d092dfca49ec2a87217fc0ab9c50adfa5ed208",
+  "best_epoch": 5,
+  "validation_macro_log_loss": 0.15401226849210675,
+  "class_order": [
+    "endolysin",
+    "VAL",
+    "holin",
+    "non-LVH"
+  ],
+  "discovery_host_groups": [
+    "S_aureus_virus",
+    "E_faecalis_virus",
+    "E_faecium_virus"
+  ],
+  "hyperparameters": {
+    "hidden_sizes": [
+      256
+    ],
+    "lr": 0.0001,
+    "batch_size": 128
+  },
+  "selection_metric": "validation_macro_log_loss",
+  "protocol_id": "benchmark_v2_20261015",
+  "decision_rule": "Four-class argmax equals class 0"
+}

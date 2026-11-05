@@ -1,0 +1,37 @@
+{
+  "representation": "ProtBERT",
+  "classifier": "MLP",
+  "seed": 42,
+  "input_dim": 1024,
+  "hidden_sizes": [
+    256
+  ],
+  "dropout": 0.3,
+  "checkpoint": "model.pth",
+  "checkpoint_sha256": "fef088afef216e09a457931c20d57eb4621f49831beff254ab1892bce2b217e9",
+  "scaler": "scaler.joblib",
+  "scaler_sha256": "4f50d07cf963f1d0c5d35e5ed31d8e0825cb78fd423eae528c3bccfc51f2d0c8",
+  "best_epoch": 11,
+  "validation_macro_log_loss": 0.12870428843392373,
+  "class_order": [
+    "endolysin",
+    "VAL",
+    "holin",
+    "non-LVH"
+  ],
+  "discovery_host_groups": [
+    "S_aureus_virus",
+    "E_faecalis_virus",
+    "E_faecium_virus"
+  ],
+  "hyperparameters": {
+    "hidden_sizes": [
+      256
+    ],
+    "lr": 0.0001,
+    "batch_size": 128
+  },
+  "selection_metric": "validation_macro_log_loss",
+  "protocol_id": "benchmark_v2_20261015",
+  "decision_rule": "Four-class argmax equals class 0"
+}

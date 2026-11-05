@@ -1,0 +1,8 @@
+{
+  "representation": "ProtBERT",
+  "rows": 16,
+  "dimension": 1024,
+  "matrix_sha256": "de4e2afcfdbdbe72d9c8e34b7bbbb0cd7680215b7532d97af7d5211f041caa83",
+  "ids_sha256": "c44eb2eb89cc63be721851c3999e193e6b1ad94a1d5c024944ca3876e27c5f53",
+  "data_sha256": "800dad92e6515cd9a320ab2e7376d2cd565cfa21605d26bc8dda19589a5067a6"
+}

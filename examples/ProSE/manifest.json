@@ -1,0 +1,8 @@
+{
+  "representation": "ProSE",
+  "rows": 16,
+  "dimension": 6165,
+  "matrix_sha256": "f807aad22c397aebbba4f7de029373ddca3f7fb1bada586afbbef8d79128a4c9",
+  "ids_sha256": "c44eb2eb89cc63be721851c3999e193e6b1ad94a1d5c024944ca3876e27c5f53",
+  "data_sha256": "800dad92e6515cd9a320ab2e7376d2cd565cfa21605d26bc8dda19589a5067a6"
+}
