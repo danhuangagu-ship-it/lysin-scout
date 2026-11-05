@@ -150,6 +150,43 @@ deactivate
 Use the matching model, feature directory and IDs for ProtBERT or ProSE. A model's
 feature dimension, preprocessing and encoder fingerprint must all agree.
 
+## Run all three models together
+
+After completing the three encoder installations and downloads, activate the
+classifier environment. Update the paths in `encoders.example.json` (paths are
+relative to that JSON file, or may be absolute), then run:
+
+```bash
+source .venv-classifier/bin/activate
+lysin-scout --model all --fasta phage_proteins.faa \
+  --encoder-config encoders.example.json --out-dir results/all_models --device cpu
+deactivate
+```
+
+Each configured Python must have LysinScout installed with `python -m pip install
+-e .` in its own environment as shown above. The runner performs ESMC, ProtBERT and
+ProSE sequentially and stops on failure; completed per-model files remain available.
+A failed run has `status: failed` in `run_manifest.json` and has no summary. Fix
+the cause and choose a new output directory to rerun.
+
+For precomputed embeddings, the layout is `ROOT/ESMC/{features.npy,ids.csv}`,
+`ROOT/ProtBERT/{features.npy,ids.csv}` and `ROOT/ProSE/{features.npy,ids.csv}`:
+
+```bash
+source .venv-classifier/bin/activate
+lysin-scout --model all --features-dir embeddings --out-dir results/all_from_embeddings
+deactivate
+```
+
+`summary.csv` joins proteins by ID, checks agreement of raw sequence hashes and
+retains each model's class, endolysin score, candidate flag and threshold flag.
+`supporting_models` counts class-0 predictions (0–3); `models_passing_threshold`
+counts models that also pass their own recommended threshold. `candidate_any_model`
+and `candidate_all_models` denote union and three-model intersection, respectively.
+These are support counts, not calibrated ensemble probabilities. Full three-encoder
+FASTA execution still requires validation in the target environment; tests of the
+runner with stored embeddings do not establish encoder compatibility.
+
 ## Optional tests and interpretation
 
 `tests/integration/smoke.faa` contains synthetic sequences with no activity labels:

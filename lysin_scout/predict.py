@@ -83,13 +83,44 @@ def classify(ids, probabilities, model):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--model', required=True, choices=MODELS)
-    parser.add_argument('--features', required=True, help='N x D .npy matrix from the matching encoder')
-    parser.add_argument('--ids', required=True, help='Row-matched CSV: id,sequence_sha256')
-    parser.add_argument('--out', required=True)
+    parser.add_argument('--model', required=True, choices=MODELS + ('all',))
+    parser.add_argument('--features', help='N x D .npy matrix from the matching encoder')
+    parser.add_argument('--ids', help='Row-matched CSV: id,sequence_sha256')
+    parser.add_argument('--out')
+    parser.add_argument('--features-dir', help='For --model all: root containing MODEL/features.npy and ids.csv')
+    parser.add_argument('--fasta', help='Phage protein FASTA input')
+    parser.add_argument('--encoder-config', help='Encoder Python and weight paths for FASTA input')
+    parser.add_argument('--out-dir', help='New output directory for FASTA or three-model runs')
+    parser.add_argument('--device', choices=('cpu', 'cuda'), default='cpu', help='Encoder device for FASTA input')
     parser.add_argument('--threads', type=int, default=1)
     parser.add_argument('--batch-size', type=int, default=512)
     args = parser.parse_args()
+    if args.threads < 1 or args.batch_size < 1:
+        parser.error('--threads and --batch-size must be positive')
+    if args.device != 'cpu' and not args.fasta:
+        parser.error('--device cuda applies only to FASTA input; classifiers run on CPU')
+    if args.fasta:
+        if not args.out_dir or not args.encoder_config:
+            parser.error('--fasta requires --encoder-config and --out-dir')
+        if args.features or args.ids or args.out or args.features_dir:
+            parser.error('Choose either FASTA or precomputed embeddings')
+        from .run_all import run_pipeline
+        run_pipeline(args)
+        return
+    if args.model == 'all':
+        if not args.out_dir or bool(args.features_dir) == bool(args.fasta):
+            parser.error('--model all requires --out-dir and exactly one of --features-dir or --fasta')
+        if bool(args.encoder_config) != bool(args.fasta):
+            parser.error('--encoder-config is required only with --fasta')
+        if args.features or args.ids or args.out:
+            parser.error('Use --features-dir/--fasta and --out-dir for --model all')
+        from .run_all import run_all
+        run_all(args)
+        return
+    if not all((args.features, args.ids, args.out)):
+        parser.error('A single model requires --features, --ids and --out')
+    if args.features_dir or args.fasta or args.encoder_config or args.out_dir:
+        parser.error('Batch pipeline options require --model all')
     out = Path(args.out)
     if out.exists():
         parser.error('Output exists; choose a new path')

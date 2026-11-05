@@ -2,14 +2,18 @@
 
 PLM-guided discovery of phage endolysins
 
-LysinScout provides three trained four-class predictors: ESMC-MLP,
-ProtBERT-MLP and ProSE-MLP. Each classifier distinguishes endolysin, virion-associated
-lysin (VAL), holin and other viral proteins (Non-EVH).
+Antimicrobial resistance motivates the search for new antibacterial strategies.
+Phage endolysins degrade bacterial peptidoglycan and are being investigated as
+antibacterial agents. Their sequence diversity can make discovery through
+conventional homology-based annotation challenging.
 
-The repository includes the original seed-42 MLP weights, associated training-set
-scalers, configuration files and fixed embedding examples. Weights and scalers
-are verified by SHA-256 before inference. These models are not retrained when
-screening a new protein collection.
+LysinScout uses three protein-language-model predictors—ESMC-MLP, ProtBERT-MLP and
+ProSE-MLP—to screen phage proteins for candidate endolysins. The predictors
+distinguish endolysins, virion-associated lysins (VALs), holins and other viral
+proteins (Non-EVH), supporting candidate selection for further functional testing.
+
+**Input:** a FASTA file containing amino-acid sequences of proteins predicted from
+phage genomes or contigs. Each protein must have a unique FASTA identifier.
 
 ## Install and run
 
@@ -29,15 +33,55 @@ python -m pip install -r environments/classifier-cpu.txt
 python -m pip install -e .
 python -m pip check
 
-# No encoder download is needed for the archived-embedding example.
-lysin-scout --model ESMC --features examples/ESMC/features.npy \
-  --ids examples/ESMC/ids.csv --out results/esmc_example.csv
-python -m unittest discover -s tests -v
 deactivate
 ```
 
-Replace `ESMC` with `ProtBERT` or `ProSE` in the example paths and model argument.
-Each example has 16 row-matched embeddings and archived predictions.
+### Screen a phage protein FASTA
+
+Set up the ESMC encoder environment and download its weights using the
+[installation guide](docs/INSTALL.md). Adjust the ESMC paths in
+`encoders.example.json` if needed. Then run:
+
+```bash
+source .venv-classifier/bin/activate
+lysin-scout --model ESMC --fasta phage_proteins.faa \
+  --encoder-config encoders.example.json --out-dir results/esmc --device cpu
+```
+
+LysinScout generates embeddings in the configured encoder environment and writes
+the predictions to `results/esmc/ESMC_predictions.csv`. For ProtBERT or ProSE,
+set up the corresponding encoder and change the model name.
+
+### Run all three models
+
+For the included embeddings, run all three classifiers in one command:
+
+```bash
+source .venv-classifier/bin/activate
+lysin-scout --model all --features-dir examples --out-dir results/all_examples
+```
+
+To start from your **phage protein FASTA**, first install all three encoder
+environments and download their weights as described in [the installation guide](docs/INSTALL.md).
+Edit `encoders.example.json` to point to the corresponding Python executables,
+weights and ProSE source directory. Relative paths are resolved from the directory
+containing that JSON file. Then run:
+
+```bash
+source .venv-classifier/bin/activate
+lysin-scout --model all --fasta phage_proteins.faa \
+  --encoder-config encoders.example.json --out-dir results/all_models --device cpu
+```
+
+The runner sequentially generates embeddings in each encoder's own environment
+and classifies them in the current classifier environment. It writes
+`ESMC_predictions.csv`, `ProtBERT_predictions.csv`, `ProSE_predictions.csv` and
+`summary.csv`. The summary preserves individual scores, classes and threshold
+flags, and reports support by any or all models. Scores are not averaged across
+models. IDs and raw sequence hashes must match across the three inputs; input
+row order can differ. `run_manifest.json` records completion or failure, and the
+summary is produced only when all three models finish. Use a new output directory
+for each run. Model-specific end-to-end validation limitations below still apply.
 
 ### Validation status
 

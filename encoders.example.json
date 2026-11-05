@@ -1,0 +1,15 @@
+{
+  "ESMC": {
+    "python": ".venv-esmc/bin/python",
+    "encoder_path": "pretrained/ESMC/esmc_300m_2024_12_v0.pth"
+  },
+  "ProtBERT": {
+    "python": ".venv-protbert/bin/python",
+    "encoder_path": "pretrained/ProtBERT"
+  },
+  "ProSE": {
+    "python": ".venv-prose/bin/python",
+    "encoder_path": "pretrained/ProSE/prose_mt_3x1024.sav",
+    "prose_source": "upstream/prose"
+  }
+}
